@@ -53,7 +53,6 @@
   </nav>
 </header>
 <main class="container">
-  <!-- DASHBOARD -->
   <section id="pag-dashboard" class="pagina ativa">
     <div class="cards">
       <div class="card"><h3>Pendentes</h3><p id="s-pend" class="big-number">0</p></div>
@@ -66,7 +65,6 @@
     <h2 class="section-title" style="margin-top:1.5rem">⏰ Alertas</h2><ul id="alertas" class="lista-prazos"></ul>
   </section>
   
-  <!-- TAREFAS -->
   <section id="pag-tarefas" class="pagina">
     <h2 class="section-title">Nova Tarefa</h2>
     <form id="form-tarefa">
@@ -82,7 +80,6 @@
     </div>
   </section>
   
-  <!-- REUNIÕES -->
   <section id="pag-reunioes" class="pagina">
     <h2 class="section-title">Marcar Reunião</h2>
     <form id="form-reuniao">
@@ -93,7 +90,6 @@
     <h2 class="section-title">Reuniões</h2><ul id="lista-reunioes" class="lista-prazos"></ul>
   </section>
   
-  <!-- DOCS -->
   <section id="pag-docs" class="pagina">
     <h2 class="section-title">Documentos</h2>
     <form id="form-doc">
@@ -103,7 +99,6 @@
     <ul id="lista-docs" class="lista-prazos"></ul>
   </section>
   
-  <!-- CALENDÁRIO -->
   <section id="pag-calendario" class="pagina">
     <h2 class="section-title">Google Calendar</h2>
     <div class="toolbar">
@@ -112,7 +107,6 @@
     <p id="estado-login" class="estado-login">Estado: não ligado</p><ul id="log-sinc" class="log-sinc"></ul>
   </section>
   
-  <!-- DADOS -->
   <section id="pag-dados" class="pagina">
     <h2 class="section-title">Exportar / Importar</h2>
     <div class="toolbar">
@@ -208,8 +202,20 @@ document.addEventListener('click', async e => {
   if(b.dataset.acao==='apagar-doc'){ if(confirm('Apagar?')) { DB.setDocs(DB.docs().filter(x=>x.id!==b.dataset.id)); renderDocs(); } }
   if(b.dataset.acao==='enviar-reuniao'){
     const r = DB.reunioes().find(x=>x.id===b.dataset.id);
-    const ok = await criarEvento({summary:'🤝 '+r.titulo, description:r.notas, start:{dateTime:new Date(r.data).toISOString()}, end:{dateTime:new Date(new Date(r.data).getTime()+3600000).toISOString()}, attendees:r.email?[{email:r.email}]:undefined});
-    alert(ok?'Enviado ✅':'Erro ❌');
+    const ok = await criarEvento({
+      summary:'🤝 '+r.titulo, 
+      description:r.notas || 'Reunião de projeto', 
+      start:{dateTime:new Date(r.data).toISOString(), timeZone:'Europe/Lisbon'}, 
+      end:{dateTime:new Date(new Date(r.data).getTime()+3600000).toISOString(), timeZone:'Europe/Lisbon'}, 
+      attendees:r.email?[{email:r.email}]:undefined,
+      reminders: {
+        useDefault: false,
+        overrides: [
+          {method: 'popup', minutes: 15} // Notifica 15 minutos antes da reunião
+        ]
+      }
+    });
+    alert(ok?'Reunião enviada para o Google Calendar ✅':'Erro ao enviar ❌');
   }
 });
 const CLIENT_ID = '358294168881-eorh19o11sffnnksf2uduvigjl2ul4le.apps.googleusercontent.com';
@@ -223,15 +229,44 @@ function initGoogle(){
 function atualizarEstado(){ document.getElementById('estado-login').textContent = DB.token() ? 'Estado: ✅ ligado' : 'Estado: não ligado'; }
 document.getElementById('btn-login').onclick = () => { if(!initGoogle()) return alert('Aguarda 2s e tenta.'); tokenClient.requestAccessToken(); };
 document.getElementById('btn-logout').onclick = () => { DB.setToken(null); atualizarEstado(); };
+
 async function criarEvento(ev){
   if(!DB.token()) return false;
-  try { const r = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {method:'POST', headers:{Authorization:'Bearer '+DB.token(), 'Content-Type':'application/json'}, body:JSON.stringify(ev)}); return r.ok; } catch(e){ return false; }
+  try { 
+    const r = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+      method:'POST', 
+      headers:{Authorization:'Bearer '+DB.token(), 'Content-Type':'application/json'}, 
+      body:JSON.stringify(ev)
+    }); 
+    if(!r.ok) console.error(await r.text());
+    return r.ok; 
+  } catch(e){ 
+    console.error(e);
+    return false; 
+  }
 }
+
 document.getElementById('btn-sincronizar').onclick = async () => {
   if(!DB.token()) return alert('Liga primeiro.');
   const log = document.getElementById('log-sinc'); log.innerHTML=''; const t = DB.tarefas().filter(x=>x.status!=='done');
   if(!t.length) return log.innerHTML='<li>Nada para sincronizar.</li>';
-  for(const x of t){ log.innerHTML+=`<li>⏳ ${x.titulo}...</li>`; const ok = await criarEvento({summary:'📌 '+x.titulo, description:x.descricao+'\nResp: '+x.responsavel, start:{date:x.prazo}, end:{date:x.prazo}}); log.lastElementChild.textContent = ok?`✅ ${x.titulo}`:`❌ Erro em ${x.titulo}`; }
+  
+  for(const x of t){ 
+    log.innerHTML+=`<li>⏳ ${x.titulo}...</li>`; 
+    const ok = await criarEvento({
+      summary:'📌 '+x.titulo, 
+      description:x.descricao+'\nResp: '+x.responsavel, 
+      start:{date: x.prazo, timeZone: 'Europe/Lisbon'}, 
+      end:{date: x.prazo, timeZone: 'Europe/Lisbon'},
+      reminders: {
+        useDefault: false,
+        overrides: [
+          {method: 'popup', minutes: 1440} // Notifica 1 dia antes (24h)
+        ]
+      }
+    }); 
+    log.lastElementChild.textContent = ok?`✅ ${x.titulo}`:`❌ Erro em ${x.titulo}`; 
+  }
 };
 function exportarJSON(){ const b = new Blob([JSON.stringify({tarefas:DB.tarefas(), reunioes:DB.reunioes(), docs:DB.docs()},null,2)], {type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=`projeto-${hoje()}.json`; a.click(); }
 function exportarMD(){
