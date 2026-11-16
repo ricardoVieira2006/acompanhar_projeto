@@ -74,7 +74,6 @@
 
 <main class="container">
 
-  <!-- DASHBOARD -->
   <section id="pag-dashboard" class="pagina ativa">
     <div class="cards">
       <div class="card"><h3>Tarefas pendentes</h3><p id="s-pend" class="big-number">0</p></div>
@@ -93,7 +92,6 @@
     <ul id="alertas" class="lista-prazos"></ul>
   </section>
 
-  <!-- TAREFAS -->
   <section id="pag-tarefas" class="pagina">
     <h2 class="section-title">Nova Tarefa / Prazo</h2>
     <form id="form-tarefa">
@@ -114,7 +112,6 @@
     </div>
   </section>
 
-  <!-- REUNIÕES -->
   <section id="pag-reunioes" class="pagina">
     <h2 class="section-title">Marcar Reunião</h2>
     <form id="form-reuniao">
@@ -128,7 +125,6 @@
     <ul id="lista-reunioes" class="lista-prazos"></ul>
   </section>
 
-  <!-- DOCUMENTOS -->
   <section id="pag-docs" class="pagina">
     <h2 class="section-title">Documentos e Links Partilhados</h2>
     <form id="form-doc">
@@ -139,7 +135,6 @@
     <ul id="lista-docs" class="lista-prazos"></ul>
   </section>
 
-  <!-- CALENDÁRIO -->
   <section id="pag-calendario" class="pagina">
     <h2 class="section-title">Integração Google Calendar</h2>
     <p>Liga a tua conta Google para sincronizar prazos e reuniões automaticamente.</p>
@@ -152,7 +147,6 @@
     <ul id="log-sinc" class="log-sinc" style="margin-top:1rem"></ul>
   </section>
 
-  <!-- DADOS -->
   <section id="pag-dados" class="pagina">
     <h2 class="section-title">Exportar / Importar</h2>
     <p>Guarda uma cópia de segurança ou envia ao teu colega.</p>
@@ -172,7 +166,7 @@
 
 <script>
 /* =========================================================
-   1. STORAGE (localStorage)
+   STORAGE
    ========================================================= */
 const DB = {
   get(k, def){ try { return JSON.parse(localStorage.getItem(k)) ?? def; } catch { return def; } },
@@ -188,7 +182,7 @@ const DB = {
 };
 
 /* =========================================================
-   2. NAVEGAÇÃO
+   NAVEGAÇÃO
    ========================================================= */
 document.querySelectorAll('.navbar nav button').forEach(btn => {
   btn.onclick = () => {
@@ -205,7 +199,7 @@ document.querySelectorAll('.navbar nav button').forEach(btn => {
 });
 
 /* =========================================================
-   3. UTILS
+   UTILS
    ========================================================= */
 const hoje = () => new Date().toISOString().split('T')[0];
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
@@ -219,7 +213,7 @@ function diasParaData(dataStr){
 }
 
 /* =========================================================
-   4. TAREFAS (Kanban)
+   TAREFAS (Kanban)
    ========================================================= */
 document.getElementById('form-tarefa').onsubmit = e => {
   e.preventDefault();
@@ -303,7 +297,7 @@ document.addEventListener('click', e => {
 });
 
 /* =========================================================
-   5. DASHBOARD + ALERTAS
+   DASHBOARD + ALERTAS
    ========================================================= */
 function renderDashboard(){
   const tarefas = DB.tarefas();
@@ -376,7 +370,7 @@ function notificarAlertas(alertas){
 }
 
 /* =========================================================
-   6. REUNIÕES
+   REUNIÕES
    ========================================================= */
 document.getElementById('form-reuniao').onsubmit = e => {
   e.preventDefault();
@@ -433,7 +427,7 @@ document.addEventListener('click', async e => {
 });
 
 /* =========================================================
-   7. DOCUMENTOS
+   DOCUMENTOS
    ========================================================= */
 document.getElementById('form-doc').onsubmit = e => {
   e.preventDefault();
@@ -469,9 +463,9 @@ document.addEventListener('click', e => {
 });
 
 /* =========================================================
-   8. GOOGLE CALENDAR (O TEU ID JÁ ESTÁ AQUI)
+   GOOGLE CALENDAR (ID CORRIGIDO)
    ========================================================= */
-const CLIENT_ID = '358294168881-eorh19o11sffnnksf2uduvigl2ul4le.apps.googleusercontent.com';
+const CLIENT_ID = '358294168881-eorh19o11sffnnksf2uduvigjl2ul4le.apps.googleusercontent.com';
 const SCOPES = 'https://www.googleapis.com/auth/calendar.events';
 let tokenClient = null;
 
@@ -554,7 +548,7 @@ document.getElementById('btn-sincronizar').onclick = async () => {
 };
 
 /* =========================================================
-   9. EXPORTAR / IMPORTAR
+   EXPORTAR / IMPORTAR
    ========================================================= */
 function exportarJSON(){
   const dados = {
@@ -636,7 +630,7 @@ document.getElementById('btn-limpar').onclick = () => {
 };
 
 /* =========================================================
-   10. INICIALIZAÇÃO
+   INICIALIZAÇÃO
    ========================================================= */
 renderDashboard();
 renderKanban();
