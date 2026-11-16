@@ -33,8 +33,17 @@
   .tarefa-card.atrasada{border-left-color:var(--erro)}.tarefa-card.concluida{opacity:.55;text-decoration:line-through}
   .tarefa-card h4{font-size:.95rem;margin-bottom:.25rem}.tarefa-card small{color:#6b7280;font-size:.8rem}
   .tarefa-card .acoes{display:flex;gap:.3rem;margin-top:.5rem;flex-wrap:wrap}.tarefa-card .acoes button{font-size:.72rem;padding:.25rem .5rem}
+  
+  /* Estilo para as listas do Calendário (como na imagem) */
+  .card-calendario {background: #1e1e1e; color: #e5e5e5; padding: 1.2rem; border-radius: 12px; margin-bottom: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border-left: 5px solid #10b981; position: relative;}
+  .card-calendario .titulo {font-size: 1.1rem; font-weight: bold; margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.5rem;}
+  .card-calendario .data-hora {font-size: 0.85rem; color: #9ca3af; margin-bottom: 0.8rem;}
+  .card-calendario .detalhes {font-size: 0.85rem; line-height: 1.5; color: #d1d5db; border-top: 1px solid #333; padding-top: 0.8rem; margin-bottom: 0.8rem;}
+  .card-calendario .alertas {font-size: 0.75rem; color: #9ca3af; display: flex; align-items: center; gap: 0.5rem;}
+  .card-calendario .badge-google {position: absolute; top: 1rem; right: 1rem; background: rgba(16, 185, 129, 0.2); color: #10b981; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.7rem; font-weight: bold;}
+  .card-calendario .btn-apagar {position: absolute; bottom: 1rem; right: 1rem; background: transparent; border: none; color: #ef4444; cursor: pointer; font-size: 0.9rem;}
+
   .lista-prazos li{background:var(--card);padding:.7rem 1rem;margin-bottom:.5rem;border-radius:6px;border-left:3px solid var(--aviso);list-style:none;font-size:.9rem}
-  .log-sinc li{list-style:none;font-size:.85rem;padding:.3rem 0}.estado-login{margin-top:.6rem;font-weight:600}
   .section-title{margin-bottom:.8rem;font-size:1.2rem}.toolbar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.2rem}
   .badge{display:inline-block;padding:.15rem .5rem;border-radius:999px;font-size:.75rem;font-weight:600;color:#fff}
   .badge.eu{background:var(--primary)}.badge.colega{background:var(--sucesso)}.badge.atraso{background:var(--erro)}
@@ -66,7 +75,7 @@
   </section>
   
   <section id="pag-tarefas" class="pagina">
-    <h2 class="section-title">Nova Tarefa</h2>
+    <h2 class="section-title">Nova Tarefa (Envia direto para o Calendário)</h2>
     <form id="form-tarefa">
       <input type="text" id="t-titulo" placeholder="Título" required>
       <select id="t-resp" required><option value="">Responsável</option><option value="Eu">Eu</option><option value="Colega">Colega</option></select>
@@ -81,13 +90,13 @@
   </section>
   
   <section id="pag-reunioes" class="pagina">
-    <h2 class="section-title">Marcar Reunião</h2>
+    <h2 class="section-title">Marcar Reunião (Envia direto para o Calendário)</h2>
     <form id="form-reuniao">
       <input type="text" id="r-titulo" placeholder="Assunto" required><input type="datetime-local" id="r-data" required>
-      <input type="email" id="r-email" placeholder="Email do colega (para convite e Google Meet)"><textarea id="r-notas" placeholder="Notas" rows="2"></textarea>
+      <input type="email" id="r-email" placeholder="Email do colega (opcional)"><textarea id="r-notas" placeholder="Notas / Agenda" rows="2"></textarea>
       <button type="submit">📅 Marcar</button>
     </form>
-    <h2 class="section-title">Reuniões</h2><ul id="lista-reunioes" class="lista-prazos"></ul>
+    <h2 class="section-title">Reuniões Guardadas</h2><ul id="lista-reunioes" class="lista-prazos"></ul>
   </section>
   
   <section id="pag-docs" class="pagina">
@@ -102,9 +111,13 @@
   <section id="pag-calendario" class="pagina">
     <h2 class="section-title">Google Calendar</h2>
     <div class="toolbar">
-      <button id="btn-login">🔗 Ligar</button><button id="btn-sincronizar">📤 Sincronizar Tarefas</button><button id="btn-logout" class="secundario">Desligar</button>
+      <button id="btn-login">🔗 Ligar Conta Google</button>
+      <button id="btn-logout" class="secundario">Desligar</button>
     </div>
-    <p id="estado-login" class="estado-login">Estado: não ligado</p><ul id="log-sinc" class="log-sinc"></ul>
+    <p id="estado-login" class="estado-login" style="margin-bottom:2rem">Estado: não ligado</p>
+    
+    <h2 class="section-title">O teu Calendário do Projeto</h2>
+    <div id="lista-calendario"></div>
   </section>
   
   <section id="pag-dados" class="pagina">
@@ -135,7 +148,7 @@ document.querySelectorAll('.navbar nav button').forEach(btn => {
     btn.classList.add('active'); document.getElementById('pag-' + btn.dataset.pag).classList.add('ativa');
     if (btn.dataset.pag === 'dashboard') renderDash(); if (btn.dataset.pag === 'tarefas') renderKanban();
     if (btn.dataset.pag === 'reunioes') renderReunioes(); if (btn.dataset.pag === 'docs') renderDocs();
-    if (btn.dataset.pag === 'calendario') atualizarEstado();
+    if (btn.dataset.pag === 'calendario') { atualizarEstado(); renderCalendario(); }
   };
 });
 const hoje = () => new Date().toISOString().split('T')[0];
@@ -144,10 +157,25 @@ const fmtData = d => new Date(d + 'T00:00').toLocaleDateString('pt-PT');
 const fmtDataHora = d => new Date(d).toLocaleString('pt-PT');
 function diasParaData(d){ return Math.round((new Date(d+'T00:00') - new Date(hoje()+'T00:00')) / 86400000); }
 
-document.getElementById('form-tarefa').onsubmit = e => {
+// TAREFAS
+document.getElementById('form-tarefa').onsubmit = async e => {
   e.preventDefault(); const t = DB.tarefas();
-  t.push({id:uid(), titulo:document.getElementById('t-titulo').value.trim(), responsavel:document.getElementById('t-resp').value, prazo:document.getElementById('t-prazo').value, descricao:document.getElementById('t-desc').value.trim(), status:'todo'});
-  DB.setTarefas(t); e.target.reset(); renderKanban(); renderDash();
+  const novaTarefa = {
+    id:uid(), titulo:document.getElementById('t-titulo').value.trim(), 
+    responsavel:document.getElementById('t-resp').value, prazo:document.getElementById('t-prazo').value, 
+    descricao:document.getElementById('t-desc').value.trim(), status:'todo'
+  };
+  t.push(novaTarefa); DB.setTarefas(t); e.target.reset(); renderKanban(); renderDash();
+  
+  if(DB.token()) {
+    const dFim = new Date(novaTarefa.prazo + 'T00:00'); dFim.setDate(dFim.getDate() + 1);
+    await criarEvento({
+      summary:'📌 '+novaTarefa.titulo, description:'Responsável: '+novaTarefa.responsavel+'\n'+novaTarefa.descricao, 
+      start:{date: novaTarefa.prazo, timeZone: 'Europe/Lisbon'}, end:{date: dFim.toISOString().split('T')[0], timeZone: 'Europe/Lisbon'},
+      reminders: {useDefault: false, overrides: [{method: 'popup', minutes: 1440}]}
+    });
+    renderCalendario();
+  }
 };
 function renderKanban(){
   const t = DB.tarefas(); ['todo','doing','done'].forEach(s => document.getElementById('col-'+s).innerHTML = '');
@@ -166,8 +194,10 @@ function renderKanban(){
 document.addEventListener('click', e => {
   const b = e.target.closest('button[data-acao]'); if(!b) return;
   if(b.dataset.acao==='mover'){ const t=DB.tarefas(); t.find(x=>x.id===b.dataset.id).status=b.dataset.status; DB.setTarefas(t); renderKanban(); renderDash(); }
-  if(b.dataset.acao==='apagar'){ if(confirm('Apagar?')) { DB.setTarefas(DB.tarefas().filter(x=>x.id!==b.dataset.id)); renderKanban(); renderDash(); } }
+  if(b.dataset.acao==='apagar'){ if(confirm('Apagar?')) { DB.setTarefas(DB.tarefas().filter(x=>x.id!==b.dataset.id)); renderKanban(); renderDash(); renderCalendario(); } }
 });
+
+// DASHBOARD
 function renderDash(){
   const t = DB.tarefas(), h = hoje();
   const p = t.filter(x=>x.status==='todo').length, pr = t.filter(x=>x.status==='doing').length, c = t.filter(x=>x.status==='done').length, a = t.filter(x=>x.status!=='done'&&x.prazo<h).length;
@@ -178,15 +208,37 @@ function renderDash(){
   const al = t.filter(x=>x.status!=='done'&&diasParaData(x.prazo)<=3);
   document.getElementById('alertas').innerHTML = al.length ? al.map(x=>{ const d=diasParaData(x.prazo); const m = d<0?`Atrasada ${Math.abs(d)}d`:d===0?'HOJE':`Faltam ${d}d`; return `<li style="border-left-color:${d<0?'var(--erro)':'var(--aviso)'}"><strong>${x.titulo}</strong> — ${m} (${x.responsavel})</li>`; }).join('') : '<li>Sem alertas 🎉</li>';
 }
-document.getElementById('form-reuniao').onsubmit = e => {
+
+// REUNIÕES
+document.getElementById('form-reuniao').onsubmit = async e => {
   e.preventDefault(); const r = DB.reunioes();
-  r.push({id:uid(), titulo:document.getElementById('r-titulo').value, data:document.getElementById('r-data').value, email:document.getElementById('r-email').value, notas:document.getElementById('r-notas').value});
-  DB.setReunioes(r); e.target.reset(); renderReunioes();
+  const novaReuniao = {
+    id:uid(), titulo:document.getElementById('r-titulo').value, data:document.getElementById('r-data').value, 
+    email:document.getElementById('r-email').value, notas:document.getElementById('r-notas').value
+  };
+  r.push(novaReuniao); DB.setReunioes(r); e.target.reset(); renderReunioes();
+  
+  if(DB.token()) {
+    await criarEvento({
+      summary:'🤝 '+novaReuniao.titulo, description:novaReuniao.notas || 'Reunião de projeto', 
+      start:{dateTime:new Date(novaReuniao.data).toISOString(), timeZone:'Europe/Lisbon'}, 
+      end:{dateTime:new Date(new Date(novaReuniao.data).getTime()+3600000).toISOString(), timeZone:'Europe/Lisbon'}, 
+      attendees:novaReuniao.email?[{email:novaReuniao.email}]:undefined,
+      reminders: {useDefault: false, overrides: [{method: 'popup', minutes: 15}]}
+    });
+    renderCalendario();
+  }
 };
 function renderReunioes(){
   const r = DB.reunioes().sort((a,b)=>a.data.localeCompare(b.data)), el = document.getElementById('lista-reunioes');
-  el.innerHTML = r.length ? r.map(x=>`<li><strong>🤝 ${x.titulo}</strong> — ${fmtDataHora(x.data)} ${x.email?`<br><small>Convite: ${x.email}</small>`:''}<div style="margin-top:.4rem"><button class="perigo" data-acao="apagar-reuniao" data-id="${x.id}" style="font-size:.75rem;padding:.2rem .5rem">🗑</button> ${DB.token()?`<button data-acao="enviar-reuniao" data-id="${x.id}" style="font-size:.75rem;padding:.2rem .5rem">📤 Google</button>`:''}</div></li>`).join('') : '<li>Sem reuniões.</li>';
+  el.innerHTML = r.length ? r.map(x=>`<li><strong>🤝 ${x.titulo}</strong> — ${fmtDataHora(x.data)} ${x.email?`<br><small>Convite: ${x.email}</small>`:''}<div style="margin-top:.4rem"><button class="perigo" data-acao="apagar-reuniao" data-id="${x.id}" style="font-size:.75rem;padding:.2rem .5rem">🗑</button></div></li>`).join('') : '<li>Sem reuniões.</li>';
 }
+document.addEventListener('click', e => {
+  const b = e.target.closest('button[data-acao="apagar-reuniao"]'); if(!b) return;
+  if(confirm('Apagar?')) { DB.setReunioes(DB.reunioes().filter(x=>x.id!==b.dataset.id)); renderReunioes(); renderCalendario(); }
+});
+
+// DOCUMENTOS
 document.getElementById('form-doc').onsubmit = e => {
   e.preventDefault(); const d = DB.docs();
   d.push({id:uid(), nome:document.getElementById('d-nome').value, url:document.getElementById('d-url').value});
@@ -196,38 +248,67 @@ function renderDocs(){
   const d = DB.docs(), el = document.getElementById('lista-docs');
   el.innerHTML = d.length ? d.map(x=>`<li>🔗 <a href="${x.url}" target="_blank">${x.nome}</a><button class="perigo" data-acao="apagar-doc" data-id="${x.id}" style="float:right;font-size:.7rem;padding:.15rem .45rem">🗑</button></li>`).join('') : '<li>Sem documentos.</li>';
 }
-document.addEventListener('click', async e => {
-  const b = e.target.closest('button[data-acao]'); if(!b) return;
-  if(b.dataset.acao==='apagar-reuniao'){ if(confirm('Apagar?')) { DB.setReunioes(DB.reunioes().filter(x=>x.id!==b.dataset.id)); renderReunioes(); } }
-  if(b.dataset.acao==='apagar-doc'){ if(confirm('Apagar?')) { DB.setDocs(DB.docs().filter(x=>x.id!==b.dataset.id)); renderDocs(); } }
-  if(b.dataset.acao==='enviar-reuniao'){
-    const r = DB.reunioes().find(x=>x.id===b.dataset.id);
-    const ok = await criarEvento({
-      summary:'🤝 '+r.titulo, 
-      description:r.notas || 'Reunião de projeto', 
-      start:{dateTime:new Date(r.data).toISOString(), timeZone:'Europe/Lisbon'}, 
-      end:{dateTime:new Date(new Date(r.data).getTime()+3600000).toISOString(), timeZone:'Europe/Lisbon'}, 
-      attendees:r.email?[{email:r.email}]:undefined,
-      reminders: {
-        useDefault: false,
-        overrides: [{method: 'popup', minutes: 15}]
-      }
-    });
-    alert(ok?'Reunião enviada para o Google Calendar ✅':'Erro ao enviar ❌ (Ver F12)');
-  }
+document.addEventListener('click', e => {
+  const b = e.target.closest('button[data-acao="apagar-doc"]'); if(!b) return;
+  if(confirm('Apagar?')) { DB.setDocs(DB.docs().filter(x=>x.id!==b.dataset.id)); renderDocs(); }
 });
 
+// VISUAL DO CALENDÁRIO (Como na imagem do telemóvel)
+function renderCalendario() {
+  const el = document.getElementById('lista-calendario');
+  let html = '';
+  
+  // Adiciona Tarefas
+  DB.tarefas().filter(t => t.status !== 'done').forEach(t => {
+    const dFim = new Date(t.prazo + 'T00:00'); dFim.setDate(dFim.getDate() + 1);
+    html += `
+      <div class="card-calendario">
+        <div class="titulo">📌 ${t.titulo}</div>
+        <div class="data-hora">Todo o dia até ${fmtData(t.prazo)}</div>
+        <div class="detalhes">
+          Responsável: ${t.responsavel}<br>
+          ${t.descricao || 'Sem descrição adicional.'}
+        </div>
+        <div class="alertas">🔔 1 dia antes</div>
+        ${DB.token() ? '<span class="badge-google">✅ Sincronizado</span>' : ''}
+      </div>
+    `;
+  });
+
+  // Adiciona Reuniões
+  DB.reunioes().forEach(r => {
+    html += `
+      <div class="card-calendario" style="border-left-color: #4f46e5;">
+        <div class="titulo">🤝 ${r.titulo}</div>
+        <div class="data-hora">${fmtDataHora(r.data)}</div>
+        <div class="detalhes">
+          ${r.notas || 'Sem notas adicionais.'}
+        </div>
+        <div class="alertas">🔔 15 minutos antes</div>
+        ${DB.token() ? '<span class="badge-google">✅ Sincronizado</span>' : ''}
+      </div>
+    `;
+  });
+
+  if(!html) {
+    html = '<p style="color:#6b7280">Ainda não tens nada no calendário. Cria uma tarefa ou reunião para começares.</p>';
+  }
+
+  el.innerHTML = html;
+}
+
+// GOOGLE CALENDAR
 const CLIENT_ID = '358294168881-eorh19o11sffnnksf2uduvigjl2ul4le.apps.googleusercontent.com';
 const SCOPES = 'https://www.googleapis.com/auth/calendar.events';
 let tokenClient = null;
 function initGoogle(){
   if(typeof google==='undefined'||!google.accounts) return false;
-  tokenClient = google.accounts.oauth2.initTokenClient({client_id:CLIENT_ID, scope:SCOPES, callback: resp => { if(resp.access_token) { DB.setToken(resp.access_token); atualizarEstado(); alert('Ligado ✅'); } }});
+  tokenClient = google.accounts.oauth2.initTokenClient({client_id:CLIENT_ID, scope:SCOPES, callback: resp => { if(resp.access_token) { DB.setToken(resp.access_token); atualizarEstado(); renderCalendario(); alert('Ligado ✅'); } }});
   return true;
 }
 function atualizarEstado(){ document.getElementById('estado-login').textContent = DB.token() ? 'Estado: ✅ ligado' : 'Estado: não ligado'; }
 document.getElementById('btn-login').onclick = () => { if(!initGoogle()) return alert('Aguarda 2s e tenta.'); tokenClient.requestAccessToken(); };
-document.getElementById('btn-logout').onclick = () => { DB.setToken(null); atualizarEstado(); };
+document.getElementById('btn-logout').onclick = () => { DB.setToken(null); atualizarEstado(); renderCalendario(); };
 
 async function criarEvento(ev){
   if(!DB.token()) return false;
@@ -239,38 +320,10 @@ async function criarEvento(ev){
     }); 
     if(!r.ok) console.error(await r.text());
     return r.ok; 
-  } catch(e){ 
-    console.error(e);
-    return false; 
-  }
+  } catch(e){ console.error(e); return false; }
 }
 
-document.getElementById('btn-sincronizar').onclick = async () => {
-  if(!DB.token()) return alert('Liga primeiro.');
-  const log = document.getElementById('log-sinc'); log.innerHTML=''; const t = DB.tarefas().filter(x=>x.status!=='done');
-  if(!t.length) return log.innerHTML='<li>Nada para sincronizar.</li>';
-  
-  for(const x of t){ 
-    log.innerHTML+=`<li>⏳ ${x.titulo}...</li>`; 
-    
-    // DATA FIM OBRIGATÓRIA: O Google exige que o dia de fim seja o dia seguinte ao prazo
-    const dFim = new Date(x.prazo + 'T00:00');
-    dFim.setDate(dFim.getDate() + 1);
-    const dataFimStr = dFim.toISOString().split('T')[0];
-
-    const ok = await criarEvento({
-      summary:'📌 '+x.titulo, 
-      description:x.descricao+'\nResp: '+x.responsavel, 
-      start:{date: x.prazo, timeZone: 'Europe/Lisbon'}, 
-      end:{date: dataFimStr, timeZone: 'Europe/Lisbon'},
-      reminders: {
-        useDefault: false,
-        overrides: [{method: 'popup', minutes: 1440}] // Alerta 1 dia antes
-      }
-    }); 
-    log.lastElementChild.textContent = ok?`✅ ${x.titulo}`:`❌ Erro em ${x.titulo}`; 
-  }
-};
+// EXPORTAR / IMPORTAR
 function exportarJSON(){ const b = new Blob([JSON.stringify({tarefas:DB.tarefas(), reunioes:DB.reunioes(), docs:DB.docs()},null,2)], {type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=`projeto-${hoje()}.json`; a.click(); }
 function exportarMD(){
   let m = `# Relatório\n\n## Tarefas\n${DB.tarefas().map(x=>`- [${x.status==='done'?'x':' '}] **${x.titulo}** (${x.responsavel}) — ${x.prazo}\n`).join('')}\n## Reuniões\n${DB.reunioes().map(x=>`- **${x.titulo}** — ${x.data}\n`).join('')}\n## Docs\n${DB.docs().map(x=>`- [${x.nome}](${x.url})\n`).join('')}`;
@@ -279,11 +332,13 @@ function exportarMD(){
 document.getElementById('btn-export').onclick = exportarJSON; document.getElementById('btn-export-md').onclick = exportarMD;
 document.getElementById('file-import').onchange = e => {
   const f = e.target.files[0]; if(!f) return; const r = new FileReader();
-  r.onload = ev => { try { const d = JSON.parse(ev.target.result); if(!confirm('Substituir dados?')) return; if(d.tarefas) DB.setTarefas(d.tarefas); if(d.reunioes) DB.setReunioes(d.reunioes); if(d.docs) DB.setDocs(d.docs); document.getElementById('estado-import').textContent='✅ Importado!'; renderDash(); renderKanban(); renderReunioes(); renderDocs(); } catch { document.getElementById('estado-import').textContent='❌ Ficheiro inválido'; } };
+  r.onload = ev => { try { const d = JSON.parse(ev.target.result); if(!confirm('Substituir dados?')) return; if(d.tarefas) DB.setTarefas(d.tarefas); if(d.reunioes) DB.setReunioes(d.reunioes); if(d.docs) DB.setDocs(d.docs); document.getElementById('estado-import').textContent='✅ Importado!'; renderDash(); renderKanban(); renderReunioes(); renderDocs(); renderCalendario(); } catch { document.getElementById('estado-import').textContent='❌ Ficheiro inválido'; } };
   r.readAsText(f);
 };
-document.getElementById('btn-limpar').onclick = () => { if(confirm('Apagar tudo?')) { localStorage.clear(); renderDash(); renderKanban(); renderReunioes(); renderDocs(); atualizarEstado(); } };
-renderDash(); renderKanban(); renderReunioes(); renderDocs(); atualizarEstado(); setTimeout(initGoogle, 1500);
+document.getElementById('btn-limpar').onclick = () => { if(confirm('Apagar tudo?')) { localStorage.clear(); renderDash(); renderKanban(); renderReunioes(); renderDocs(); renderCalendario(); atualizarEstado(); } };
+
+// INICIAR
+renderDash(); renderKanban(); renderReunioes(); renderDocs(); atualizarEstado(); renderCalendario(); setTimeout(initGoogle, 1500);
 </script>
 </body>
 </html>
