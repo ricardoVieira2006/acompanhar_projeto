@@ -6,60 +6,41 @@
 <title>ProjetoPartilhado</title>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
-  :root{
-    --primary:#4f46e5; --primary-dark:#4338ca; --bg:#f9fafb; --card:#fff;
-    --texto:#1f2937; --borda:#e5e7eb; --sucesso:#10b981; --aviso:#f59e0b; --erro:#ef4444;
-  }
+  :root{--primary:#4f46e5;--bg:#f9fafb;--card:#fff;--texto:#1f2937;--borda:#e5e7eb;--sucesso:#10b981;--aviso:#f59e0b;--erro:#ef4444;}
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--texto);line-height:1.6}
+  body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--texto);line-height:1.6}
   .navbar{background:var(--primary);color:#fff;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem}
   .navbar h1{font-size:1.2rem}
-  .navbar nav{display:flex;gap:.4rem;flex-wrap:wrap}
   .navbar nav button{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.4);padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-size:.9rem}
   .navbar nav button.active,.navbar nav button:hover{background:rgba(255,255,255,.2)}
   .container{max-width:1100px;margin:2rem auto;padding:0 1rem}
-  .pagina{display:none}
-  .pagina.ativa{display:block}
+  .pagina{display:none}.pagina.ativa{display:block}
   .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem}
   .card{background:var(--card);padding:1.2rem;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.08);border-left:4px solid var(--primary)}
-  .card.alerta{border-left-color:var(--erro)}
-  .card h3{font-size:.9rem;color:#6b7280;font-weight:600}
-  .big-number{font-size:2.2rem;font-weight:bold;color:var(--primary)}
-  .card.alerta .big-number{color:var(--erro)}
+  .card.alerta{border-left-color:var(--erro)}.card h3{font-size:.9rem;color:#6b7280;font-weight:600}
+  .big-number{font-size:2.2rem;font-weight:bold;color:var(--primary)}.card.alerta .big-number{color:var(--erro)}
   .progresso-geral{background:var(--card);padding:1.2rem;border-radius:10px;margin-bottom:2rem;box-shadow:0 1px 3px rgba(0,0,0,.08)}
   .barra-fundo{background:var(--borda);height:20px;border-radius:10px;overflow:hidden;margin:1rem 0}
   .barra-preenchida{background:linear-gradient(90deg,var(--primary),var(--sucesso));height:100%;width:0%;transition:width .5s}
   form{display:flex;flex-direction:column;gap:.7rem;background:var(--card);padding:1.2rem;border-radius:10px;margin-bottom:2rem;box-shadow:0 1px 3px rgba(0,0,0,.08)}
-  input,select,textarea,button{font-family:inherit;font-size:.95rem}
-  input,select,textarea{padding:.6rem;border:1px solid var(--borda);border-radius:6px}
-  button{cursor:pointer;background:var(--primary);color:#fff;border:none;padding:.6rem 1rem;border-radius:6px;font-weight:600}
-  button:hover{background:var(--primary-dark)}
-  button.secundario{background:#e5e7eb;color:var(--texto)}
-  button.secundario:hover{background:#d1d5db}
-  button.perigo{background:var(--erro)}
+  input,select,textarea,button{font-family:inherit;font-size:.95rem;padding:.6rem;border:1px solid var(--borda);border-radius:6px}
+  button{cursor:pointer;background:var(--primary);color:#fff;border:none;font-weight:600}
+  button:hover{background:#4338ca}button.secundario{background:#e5e7eb;color:var(--texto)}button.perigo{background:var(--erro)}
   .kanban{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}
   .coluna{background:#eef2ff;padding:1rem;border-radius:10px;min-height:250px}
-  .coluna h3{margin-bottom:1rem;color:var(--primary-dark);font-size:1rem}
-  .lista{display:flex;flex-direction:column;gap:.6rem;min-height:50px}
+  .coluna h3{margin-bottom:1rem;color:#4338ca;font-size:1rem}.lista{display:flex;flex-direction:column;gap:.6rem;min-height:50px}
   .tarefa-card{background:#fff;padding:.9rem;border-radius:8px;box-shadow:0 1px 2px rgba(0,0,0,.1);border-left:3px solid var(--primary)}
-  .tarefa-card.atrasada{border-left-color:var(--erro)}
-  .tarefa-card.concluida{opacity:.55;text-decoration:line-through}
-  .tarefa-card h4{font-size:.95rem;margin-bottom:.25rem}
-  .tarefa-card small{color:#6b7280;font-size:.8rem}
-  .tarefa-card .acoes{display:flex;gap:.3rem;margin-top:.5rem;flex-wrap:wrap}
-  .tarefa-card .acoes button{font-size:.72rem;padding:.25rem .5rem}
+  .tarefa-card.atrasada{border-left-color:var(--erro)}.tarefa-card.concluida{opacity:.55;text-decoration:line-through}
+  .tarefa-card h4{font-size:.95rem;margin-bottom:.25rem}.tarefa-card small{color:#6b7280;font-size:.8rem}
+  .tarefa-card .acoes{display:flex;gap:.3rem;margin-top:.5rem;flex-wrap:wrap}.tarefa-card .acoes button{font-size:.72rem;padding:.25rem .5rem}
   .lista-prazos li{background:var(--card);padding:.7rem 1rem;margin-bottom:.5rem;border-radius:6px;border-left:3px solid var(--aviso);list-style:none;font-size:.9rem}
-  .log-sinc li{list-style:none;font-size:.85rem;padding:.3rem 0}
-  .estado-login{margin-top:.6rem;font-weight:600}
-  .section-title{margin-bottom:.8rem;font-size:1.2rem}
-  .toolbar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.2rem}
+  .log-sinc li{list-style:none;font-size:.85rem;padding:.3rem 0}.estado-login{margin-top:.6rem;font-weight:600}
+  .section-title{margin-bottom:.8rem;font-size:1.2rem}.toolbar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.2rem}
   .badge{display:inline-block;padding:.15rem .5rem;border-radius:999px;font-size:.75rem;font-weight:600;color:#fff}
-  .badge.eu{background:var(--primary)} .badge.colega{background:var(--sucesso)} .badge.atraso{background:var(--erro)}
-  @media(max-width:600px){.navbar{flex-direction:column;align-items:flex-start}}
+  .badge.eu{background:var(--primary)}.badge.colega{background:var(--sucesso)}.badge.atraso{background:var(--erro)}
 </style>
 </head>
 <body>
-
 <header class="navbar">
   <h1>📚 ProjetoPartilhado</h1>
   <nav>
@@ -71,39 +52,28 @@
     <button data-pag="dados">Dados</button>
   </nav>
 </header>
-
 <main class="container">
-
+  <!-- DASHBOARD -->
   <section id="pag-dashboard" class="pagina ativa">
     <div class="cards">
-      <div class="card"><h3>Tarefas pendentes</h3><p id="s-pend" class="big-number">0</p></div>
+      <div class="card"><h3>Pendentes</h3><p id="s-pend" class="big-number">0</p></div>
       <div class="card"><h3>Em progresso</h3><p id="s-prog" class="big-number">0</p></div>
       <div class="card"><h3>Concluídas</h3><p id="s-conc" class="big-number">0</p></div>
       <div class="card alerta"><h3>⚠️ Atrasadas</h3><p id="s-atra" class="big-number">0</p></div>
     </div>
-    <div class="progresso-geral">
-      <h2 class="section-title">Progresso do Projeto</h2>
-      <div class="barra-fundo"><div id="barra" class="barra-preenchida"></div></div>
-      <p id="txt-prog">0% concluído</p>
-    </div>
-    <h2 class="section-title">Próximos Prazos</h2>
-    <ul id="proximos" class="lista-prazos"></ul>
-    <h2 class="section-title" style="margin-top:1.5rem">⏰ Alertas</h2>
-    <ul id="alertas" class="lista-prazos"></ul>
+    <div class="progresso-geral"><h2 class="section-title">Progresso</h2><div class="barra-fundo"><div id="barra" class="barra-preenchida"></div></div><p id="txt-prog">0%</p></div>
+    <h2 class="section-title">Próximos Prazos</h2><ul id="proximos" class="lista-prazos"></ul>
+    <h2 class="section-title" style="margin-top:1.5rem">⏰ Alertas</h2><ul id="alertas" class="lista-prazos"></ul>
   </section>
-
+  
+  <!-- TAREFAS -->
   <section id="pag-tarefas" class="pagina">
-    <h2 class="section-title">Nova Tarefa / Prazo</h2>
+    <h2 class="section-title">Nova Tarefa</h2>
     <form id="form-tarefa">
-      <input type="text" id="t-titulo" placeholder="Título da tarefa" required>
-      <select id="t-resp" required>
-        <option value="">Responsável</option>
-        <option value="Eu">Eu</option>
-        <option value="Colega">Colega</option>
-      </select>
-      <input type="date" id="t-prazo" required>
-      <textarea id="t-desc" placeholder="Descrição (opcional)" rows="2"></textarea>
-      <button type="submit">➕ Adicionar Tarefa</button>
+      <input type="text" id="t-titulo" placeholder="Título" required>
+      <select id="t-resp" required><option value="">Responsável</option><option value="Eu">Eu</option><option value="Colega">Colega</option></select>
+      <input type="date" id="t-prazo" required><textarea id="t-desc" placeholder="Descrição" rows="2"></textarea>
+      <button type="submit">➕ Adicionar</button>
     </form>
     <div class="kanban">
       <div class="coluna"><h3>A Fazer</h3><div class="lista" id="col-todo"></div></div>
@@ -111,533 +81,171 @@
       <div class="coluna"><h3>Concluído</h3><div class="lista" id="col-done"></div></div>
     </div>
   </section>
-
+  
+  <!-- REUNIÕES -->
   <section id="pag-reunioes" class="pagina">
     <h2 class="section-title">Marcar Reunião</h2>
     <form id="form-reuniao">
-      <input type="text" id="r-titulo" placeholder="Assunto da reunião" required>
-      <input type="datetime-local" id="r-data" required>
-      <input type="email" id="r-email" placeholder="Email do colega (para convite Google)">
-      <textarea id="r-notas" placeholder="Notas / agenda" rows="2"></textarea>
-      <button type="submit">📅 Marcar Reunião</button>
+      <input type="text" id="r-titulo" placeholder="Assunto" required><input type="datetime-local" id="r-data" required>
+      <input type="email" id="r-email" placeholder="Email do colega"><textarea id="r-notas" placeholder="Notas" rows="2"></textarea>
+      <button type="submit">📅 Marcar</button>
     </form>
-    <h2 class="section-title">Reuniões Marcadas</h2>
-    <ul id="lista-reunioes" class="lista-prazos"></ul>
+    <h2 class="section-title">Reuniões</h2><ul id="lista-reunioes" class="lista-prazos"></ul>
   </section>
-
+  
+  <!-- DOCS -->
   <section id="pag-docs" class="pagina">
-    <h2 class="section-title">Documentos e Links Partilhados</h2>
+    <h2 class="section-title">Documentos</h2>
     <form id="form-doc">
-      <input type="text" id="d-nome" placeholder="Nome do documento" required>
-      <input type="url" id="d-url" placeholder="Link (Google Docs, Drive, etc.)" required>
-      <button type="submit">🔗 Adicionar Documento</button>
+      <input type="text" id="d-nome" placeholder="Nome" required><input type="url" id="d-url" placeholder="Link" required>
+      <button type="submit">🔗 Adicionar</button>
     </form>
     <ul id="lista-docs" class="lista-prazos"></ul>
   </section>
-
+  
+  <!-- CALENDÁRIO -->
   <section id="pag-calendario" class="pagina">
-    <h2 class="section-title">Integração Google Calendar</h2>
-    <p>Liga a tua conta Google para sincronizar prazos e reuniões automaticamente.</p>
-    <div class="toolbar" style="margin-top:1rem">
-      <button id="btn-login">🔗 Ligar Google Calendar</button>
-      <button id="btn-sincronizar">📤 Enviar tarefas para o Calendário</button>
-      <button id="btn-logout" class="secundario">Desligar</button>
+    <h2 class="section-title">Google Calendar</h2>
+    <div class="toolbar">
+      <button id="btn-login">🔗 Ligar</button><button id="btn-sincronizar">📤 Sincronizar</button><button id="btn-logout" class="secundario">Desligar</button>
     </div>
-    <p id="estado-login" class="estado-login">Estado: não ligado</p>
-    <ul id="log-sinc" class="log-sinc" style="margin-top:1rem"></ul>
+    <p id="estado-login" class="estado-login">Estado: não ligado</p><ul id="log-sinc" class="log-sinc"></ul>
   </section>
-
+  
+  <!-- DADOS -->
   <section id="pag-dados" class="pagina">
     <h2 class="section-title">Exportar / Importar</h2>
-    <p>Guarda uma cópia de segurança ou envia ao teu colega.</p>
-    <div class="toolbar" style="margin-top:1rem">
-      <button id="btn-export">💾 Exportar JSON</button>
-      <button id="btn-export-md" class="secundario">📄 Exportar Relatório (.md)</button>
-      <label style="display:inline-flex;align-items:center;gap:.5rem;background:var(--card);padding:.6rem 1rem;border-radius:6px;border:1px solid var(--borda);cursor:pointer">
-        📥 Importar JSON
-        <input type="file" id="file-import" accept=".json" style="display:none">
-      </label>
-      <button id="btn-limpar" class="perigo">🗑 Apagar tudo</button>
+    <div class="toolbar">
+      <button id="btn-export">💾 JSON</button><button id="btn-export-md" class="secundario">📄 Markdown</button>
+      <label style="background:var(--card);padding:.6rem 1rem;border-radius:6px;border:1px solid var(--borda);cursor:pointer">📥 Importar <input type="file" id="file-import" accept=".json" style="display:none"></label>
+      <button id="btn-limpar" class="perigo">🗑 Limpar</button>
     </div>
-    <p id="estado-import" style="margin-top:1rem;font-weight:600"></p>
+    <p id="estado-import"></p>
   </section>
-
 </main>
-
 <script>
-/* =========================================================
-   STORAGE
-   ========================================================= */
 const DB = {
-  get(k, def){ try { return JSON.parse(localStorage.getItem(k)) ?? def; } catch { return def; } },
+  get(k, d){ try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
   set(k, v){ localStorage.setItem(k, JSON.stringify(v)); },
-  tarefas(){ return this.get('tarefas', []); },
-  setTarefas(v){ this.set('tarefas', v); },
-  reunioes(){ return this.get('reunioes', []); },
-  setReunioes(v){ this.set('reunioes', v); },
-  docs(){ return this.get('docs', []); },
-  setDocs(v){ this.set('docs', v); },
+  tarefas(){ return this.get('tarefas', []); }, setTarefas(v){ this.set('tarefas', v); },
+  reunioes(){ return this.get('reunioes', []); }, setReunioes(v){ this.set('reunioes', v); },
+  docs(){ return this.get('docs', []); }, setDocs(v){ this.set('docs', v); },
   token(){ return localStorage.getItem('google_token'); },
   setToken(t){ t ? localStorage.setItem('google_token', t) : localStorage.removeItem('google_token'); }
 };
 
-/* =========================================================
-   NAVEGAÇÃO
-   ========================================================= */
 document.querySelectorAll('.navbar nav button').forEach(btn => {
   btn.onclick = () => {
     document.querySelectorAll('.navbar nav button').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.pagina').forEach(p => p.classList.remove('ativa'));
-    btn.classList.add('active');
-    document.getElementById('pag-' + btn.dataset.pag).classList.add('ativa');
-    if (btn.dataset.pag === 'dashboard') renderDashboard();
-    if (btn.dataset.pag === 'tarefas') renderKanban();
-    if (btn.dataset.pag === 'reunioes') renderReunioes();
-    if (btn.dataset.pag === 'docs') renderDocs();
-    if (btn.dataset.pag === 'calendario') atualizarEstadoLogin();
+    btn.classList.add('active'); document.getElementById('pag-' + btn.dataset.pag).classList.add('ativa');
+    if (btn.dataset.pag === 'dashboard') renderDash(); if (btn.dataset.pag === 'tarefas') renderKanban();
+    if (btn.dataset.pag === 'reunioes') renderReunioes(); if (btn.dataset.pag === 'docs') renderDocs();
+    if (btn.dataset.pag === 'calendario') atualizarEstado();
   };
 });
-
-/* =========================================================
-   UTILS
-   ========================================================= */
 const hoje = () => new Date().toISOString().split('T')[0];
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
 const fmtData = d => new Date(d + 'T00:00').toLocaleDateString('pt-PT');
 const fmtDataHora = d => new Date(d).toLocaleString('pt-PT');
+function diasParaData(d){ return Math.round((new Date(d+'T00:00') - new Date(hoje()+'T00:00')) / 86400000); }
 
-function diasParaData(dataStr){
-  const d = new Date(dataStr + 'T00:00');
-  const h = new Date(hoje() + 'T00:00');
-  return Math.round((d - h) / 86400000);
-}
-
-/* =========================================================
-   TAREFAS (Kanban)
-   ========================================================= */
 document.getElementById('form-tarefa').onsubmit = e => {
-  e.preventDefault();
-  const tarefas = DB.tarefas();
-  tarefas.push({
-    id: uid(),
-    titulo: document.getElementById('t-titulo').value.trim(),
-    responsavel: document.getElementById('t-resp').value,
-    prazo: document.getElementById('t-prazo').value,
-    descricao: document.getElementById('t-desc').value.trim(),
-    status: 'todo',
-    criadoEm: new Date().toISOString()
-  });
-  DB.setTarefas(tarefas);
-  e.target.reset();
-  renderKanban();
-  renderDashboard();
+  e.preventDefault(); const t = DB.tarefas();
+  t.push({id:uid(), titulo:document.getElementById('t-titulo').value.trim(), responsavel:document.getElementById('t-resp').value, prazo:document.getElementById('t-prazo').value, descricao:document.getElementById('t-desc').value.trim(), status:'todo'});
+  DB.setTarefas(t); e.target.reset(); renderKanban(); renderDash();
 };
-
 function renderKanban(){
-  const tarefas = DB.tarefas();
-  ['todo','doing','done'].forEach(s => document.getElementById('col-'+s).innerHTML = '');
-
-  if (!tarefas.length){
-    document.getElementById('col-todo').innerHTML = '<p style="color:#9ca3af;font-size:.85rem">Sem tarefas. Adiciona a primeira acima 👆</p>';
-    return;
-  }
-
-  tarefas.forEach(t => {
-    const el = document.createElement('div');
-    el.className = 'tarefa-card';
-    const atrasada = t.status !== 'done' && t.prazo < hoje();
-    if (atrasada) el.classList.add('atrasada');
-    if (t.status === 'done') el.classList.add('concluida');
-
-    const dias = diasParaData(t.prazo);
-    let prazoTxt = fmtData(t.prazo);
-    if (t.status !== 'done'){
-      if (dias < 0) prazoTxt += ` <span class="badge atraso">${Math.abs(dias)}d atraso</span>`;
-      else if (dias === 0) prazoTxt += ' <span class="badge atraso">hoje</span>';
-      else if (dias <= 3) prazoTxt += ` <small>(${dias}d)</small>`;
-    }
-
-    const badgeResp = t.responsavel === 'Eu'
-      ? '<span class="badge eu">Eu</span>'
-      : '<span class="badge colega">Colega</span>';
-
-    el.innerHTML = `
-      <h4>${t.titulo}</h4>
-      <small>${badgeResp} · 📅 ${prazoTxt}</small>
-      ${t.descricao ? `<p style="font-size:.8rem;color:#6b7280;margin-top:.3rem">${t.descricao}</p>` : ''}
-      <div class="acoes">
-        ${t.status !== 'todo' ? `<button data-acao="mover" data-id="${t.id}" data-status="todo" class="secundario">◀ A fazer</button>` : ''}
-        ${t.status !== 'doing' ? `<button data-acao="mover" data-id="${t.id}" data-status="doing">⏳</button>` : ''}
-        ${t.status !== 'done' ? `<button data-acao="mover" data-id="${t.id}" data-status="done">✔</button>` : ''}
-        <button data-acao="apagar" data-id="${t.id}" class="perigo">🗑</button>
-      </div>
-    `;
-    document.getElementById('col-'+t.status).appendChild(el);
+  const t = DB.tarefas(); ['todo','doing','done'].forEach(s => document.getElementById('col-'+s).innerHTML = '');
+  if(!t.length) return document.getElementById('col-todo').innerHTML = '<p style="color:#9ca3af;font-size:.85rem">Sem tarefas.</p>';
+  t.forEach(x => {
+    const el = document.createElement('div'); el.className = 'tarefa-card';
+    if(x.status!=='done' && x.prazo<hoje()) el.classList.add('atrasada'); if(x.status==='done') el.classList.add('concluida');
+    const d = diasParaData(x.prazo); let p = fmtData(x.prazo);
+    if(x.status!=='done'){ if(d<0) p+=` <span class="badge atraso">${Math.abs(d)}d atraso</span>`; else if(d===0) p+=' <span class="badge atraso">hoje</span>'; else if(d<=3) p+=` <small>(${d}d)</small>`; }
+    const b = x.responsavel==='Eu' ? '<span class="badge eu">Eu</span>' : '<span class="badge colega">Colega</span>';
+    el.innerHTML = `<h4>${x.titulo}</h4><small>${b} · 📅 ${p}</small>${x.descricao?`<p style="font-size:.8rem;color:#6b7280;margin-top:.3rem">${x.descricao}</p>`:''}
+      <div class="acoes">${x.status!=='todo'?`<button data-acao="mover" data-id="${x.id}" data-status="todo" class="secundario">◀</button>`:''}${x.status!=='doing'?`<button data-acao="mover" data-id="${x.id}" data-status="doing">⏳</button>`:''}${x.status!=='done'?`<button data-acao="mover" data-id="${x.id}" data-status="done">✔</button>`:''}<button data-acao="apagar" data-id="${x.id}" class="perigo">🗑</button></div>`;
+    document.getElementById('col-'+x.status).appendChild(el);
   });
 }
-
 document.addEventListener('click', e => {
-  const btn = e.target.closest('button[data-acao]');
-  if (!btn) return;
-  const id = btn.dataset.id;
-  if (btn.dataset.acao === 'mover'){
-    const tarefas = DB.tarefas();
-    const t = tarefas.find(x => x.id === id);
-    if (t) t.status = btn.dataset.status;
-    DB.setTarefas(tarefas);
-    renderKanban();
-    renderDashboard();
-  }
-  if (btn.dataset.acao === 'apagar'){
-    if (!confirm('Apagar esta tarefa?')) return;
-    DB.setTarefas(DB.tarefas().filter(t => t.id !== id));
-    renderKanban();
-    renderDashboard();
-  }
+  const b = e.target.closest('button[data-acao]'); if(!b) return;
+  if(b.dataset.acao==='mover'){ const t=DB.tarefas(); t.find(x=>x.id===b.dataset.id).status=b.dataset.status; DB.setTarefas(t); renderKanban(); renderDash(); }
+  if(b.dataset.acao==='apagar'){ if(confirm('Apagar?')) { DB.setTarefas(DB.tarefas().filter(x=>x.id!==b.dataset.id)); renderKanban(); renderDash(); } }
 });
-
-/* =========================================================
-   DASHBOARD + ALERTAS
-   ========================================================= */
-function renderDashboard(){
-  const tarefas = DB.tarefas();
-  const h = hoje();
-
-  const pend = tarefas.filter(t => t.status === 'todo').length;
-  const prog = tarefas.filter(t => t.status === 'doing').length;
-  const conc = tarefas.filter(t => t.status === 'done').length;
-  const atra = tarefas.filter(t => t.status !== 'done' && t.prazo < h).length;
-
-  document.getElementById('s-pend').textContent = pend;
-  document.getElementById('s-prog').textContent = prog;
-  document.getElementById('s-conc').textContent = conc;
-  document.getElementById('s-atra').textContent = atra;
-
-  const pct = tarefas.length ? Math.round(conc / tarefas.length * 100) : 0;
-  document.getElementById('barra').style.width = pct + '%';
-  document.getElementById('txt-prog').textContent = pct + '% concluído';
-
-  const proximos = tarefas
-    .filter(t => t.status !== 'done')
-    .sort((a,b) => a.prazo.localeCompare(b.prazo))
-    .slice(0, 6);
-
-  document.getElementById('proximos').innerHTML = proximos.length
-    ? proximos.map(t => {
-        const dias = diasParaData(t.prazo);
-        let extra = '';
-        if (dias < 0) extra = ` <span class="badge atraso">${Math.abs(dias)}d atraso</span>`;
-        else if (dias === 0) extra = ' <span class="badge atraso">hoje</span>';
-        else if (dias <= 3) extra = ` <small>(${dias}d)</small>`;
-        return `<li><strong>${t.titulo}</strong> — ${t.responsavel} · ${fmtData(t.prazo)}${extra}</li>`;
-      }).join('')
-    : '<li>Sem prazos pendentes 🎉</li>';
-
-  const alertas = tarefas.filter(t => {
-    if (t.status === 'done') return false;
-    const d = diasParaData(t.prazo);
-    return d <= 3;
-  });
-
-  document.getElementById('alertas').innerHTML = alertas.length
-    ? alertas.map(t => {
-        const d = diasParaData(t.prazo);
-        const msg = d < 0 ? `Atrasada ${Math.abs(d)} dia(s)` : d === 0 ? 'Prazo é HOJE' : `Faltam ${d} dia(s)`;
-        return `<li style="border-left-color:${d<0?'var(--erro)':'var(--aviso)'}">
-          <strong>${t.titulo}</strong> — ${msg} <small>(${t.responsavel})</small></li>`;
-      }).join('')
-    : '<li>Sem alertas 🎉</li>';
-
-  notificarAlertas(alertas);
+function renderDash(){
+  const t = DB.tarefas(), h = hoje();
+  const p = t.filter(x=>x.status==='todo').length, pr = t.filter(x=>x.status==='doing').length, c = t.filter(x=>x.status==='done').length, a = t.filter(x=>x.status!=='done'&&x.prazo<h).length;
+  document.getElementById('s-pend').textContent=p; document.getElementById('s-prog').textContent=pr; document.getElementById('s-conc').textContent=c; document.getElementById('s-atra').textContent=a;
+  const pct = t.length ? Math.round(c/t.length*100) : 0; document.getElementById('barra').style.width=pct+'%'; document.getElementById('txt-prog').textContent=pct+'% concluído';
+  const prox = t.filter(x=>x.status!=='done').sort((a,b)=>a.prazo.localeCompare(b.prazo)).slice(0,6);
+  document.getElementById('proximos').innerHTML = prox.length ? prox.map(x=>`<li><strong>${x.titulo}</strong> — ${x.responsavel} · ${fmtData(x.prazo)}</li>`).join('') : '<li>Sem prazos 🎉</li>';
+  const al = t.filter(x=>x.status!=='done'&&diasParaData(x.prazo)<=3);
+  document.getElementById('alertas').innerHTML = al.length ? al.map(x=>{ const d=diasParaData(x.prazo); const m = d<0?`Atrasada ${Math.abs(d)}d`:d===0?'HOJE':`Faltam ${d}d`; return `<li style="border-left-color:${d<0?'var(--erro)':'var(--aviso)'}"><strong>${x.titulo}</strong> — ${m} (${x.responsavel})</li>`; }).join('') : '<li>Sem alertas 🎉</li>';
 }
-
-function notificarAlertas(alertas){
-  if (!('Notification' in window)) return;
-  if (Notification.permission === 'default') Notification.requestPermission();
-  if (Notification.permission !== 'granted') return;
-
-  const hojeStr = hoje();
-  const jaNotif = JSON.parse(localStorage.getItem('notif_' + hojeStr) || '[]');
-
-  alertas.forEach(t => {
-    if (jaNotif.includes(t.id)) return;
-    new Notification('⏰ ProjetoPartilhado', {
-      body: `${t.titulo} — prazo ${fmtData(t.prazo)} (${t.responsavel})`
-    });
-    jaNotif.push(t.id);
-  });
-  localStorage.setItem('notif_' + hojeStr, JSON.stringify(jaNotif));
-}
-
-/* =========================================================
-   REUNIÕES
-   ========================================================= */
 document.getElementById('form-reuniao').onsubmit = e => {
-  e.preventDefault();
-  const reunioes = DB.reunioes();
-  reunioes.push({
-    id: uid(),
-    titulo: document.getElementById('r-titulo').value.trim(),
-    data: document.getElementById('r-data').value,
-    email: document.getElementById('r-email').value.trim(),
-    notas: document.getElementById('r-notas').value.trim(),
-    criadoEm: new Date().toISOString()
-  });
-  DB.setReunioes(reunioes);
-  e.target.reset();
-  renderReunioes();
+  e.preventDefault(); const r = DB.reunioes();
+  r.push({id:uid(), titulo:document.getElementById('r-titulo').value, data:document.getElementById('r-data').value, email:document.getElementById('r-email').value, notas:document.getElementById('r-notas').value});
+  DB.setReunioes(r); e.target.reset(); renderReunioes();
 };
-
 function renderReunioes(){
-  const reunioes = DB.reunioes().sort((a,b) => a.data.localeCompare(b.data));
-  const el = document.getElementById('lista-reunioes');
-  if (!reunioes.length){ el.innerHTML = '<li>Sem reuniões marcadas.</li>'; return; }
-  el.innerHTML = reunioes.map(r => `
-    <li>
-      <strong>🤝 ${r.titulo}</strong> — ${fmtDataHora(r.data)}
-      ${r.email ? `<br><small>Convite: ${r.email}</small>` : ''}
-      ${r.notas ? `<br><small>${r.notas}</small>` : ''}
-      <div style="margin-top:.4rem">
-        <button class="perigo" data-acao="apagar-reuniao" data-id="${r.id}" style="font-size:.75rem;padding:.2rem .5rem">🗑</button>
-        ${DB.token() ? `<button data-acao="enviar-reuniao" data-id="${r.id}" style="font-size:.75rem;padding:.2rem .5rem">📤 Enviar ao Google</button>` : ''}
-      </div>
-    </li>`).join('');
+  const r = DB.reunioes().sort((a,b)=>a.data.localeCompare(b.data)), el = document.getElementById('lista-reunioes');
+  el.innerHTML = r.length ? r.map(x=>`<li><strong>🤝 ${x.titulo}</strong> — ${fmtDataHora(x.data)} ${x.email?`<br><small>Convite: ${x.email}</small>`:''}<div style="margin-top:.4rem"><button class="perigo" data-acao="apagar-reuniao" data-id="${x.id}" style="font-size:.75rem;padding:.2rem .5rem">🗑</button> ${DB.token()?`<button data-acao="enviar-reuniao" data-id="${x.id}" style="font-size:.75rem;padding:.2rem .5rem">📤 Google</button>`:''}</div></li>`).join('') : '<li>Sem reuniões.</li>';
 }
-
-document.addEventListener('click', async e => {
-  const btn = e.target.closest('button[data-acao]');
-  if (!btn) return;
-  if (btn.dataset.acao === 'apagar-reuniao'){
-    if (!confirm('Apagar esta reunião?')) return;
-    DB.setReunioes(DB.reunioes().filter(r => r.id !== btn.dataset.id));
-    renderReunioes();
-  }
-  if (btn.dataset.acao === 'enviar-reuniao'){
-    const r = DB.reunioes().find(x => x.id === btn.dataset.id);
-    if (!r) return;
-    const ok = await criarEventoGoogle({
-      summary: '🤝 ' + r.titulo,
-      description: r.notas || '',
-      start: { dateTime: new Date(r.data).toISOString() },
-      end:   { dateTime: new Date(new Date(r.data).getTime() + 3600000).toISOString() },
-      attendees: r.email ? [{ email: r.email }] : undefined
-    });
-    alert(ok ? 'Reunião enviada ao Google Calendar ✅' : 'Erro ao enviar (ver consola).');
-  }
-});
-
-/* =========================================================
-   DOCUMENTOS
-   ========================================================= */
 document.getElementById('form-doc').onsubmit = e => {
-  e.preventDefault();
-  const docs = DB.docs();
-  docs.push({
-    id: uid(),
-    nome: document.getElementById('d-nome').value.trim(),
-    url: document.getElementById('d-url').value.trim(),
-    criadoEm: new Date().toISOString()
-  });
-  DB.setDocs(docs);
-  e.target.reset();
-  renderDocs();
+  e.preventDefault(); const d = DB.docs();
+  d.push({id:uid(), nome:document.getElementById('d-nome').value, url:document.getElementById('d-url').value});
+  DB.setDocs(d); e.target.reset(); renderDocs();
 };
-
 function renderDocs(){
-  const docs = DB.docs();
-  const el = document.getElementById('lista-docs');
-  el.innerHTML = docs.length
-    ? docs.map(d => `<li>
-        🔗 <a href="${d.url}" target="_blank" rel="noopener">${d.nome}</a>
-        <button class="perigo" data-acao="apagar-doc" data-id="${d.id}" style="float:right;font-size:.7rem;padding:.15rem .45rem">🗑</button>
-      </li>`).join('')
-    : '<li>Sem documentos. Adiciona links do Google Docs, Drive, etc.</li>';
+  const d = DB.docs(), el = document.getElementById('lista-docs');
+  el.innerHTML = d.length ? d.map(x=>`<li>🔗 <a href="${x.url}" target="_blank">${x.nome}</a><button class="perigo" data-acao="apagar-doc" data-id="${x.id}" style="float:right;font-size:.7rem;padding:.15rem .45rem">🗑</button></li>`).join('') : '<li>Sem documentos.</li>';
 }
-
-document.addEventListener('click', e => {
-  const btn = e.target.closest('button[data-acao="apagar-doc"]');
-  if (!btn) return;
-  if (!confirm('Apagar este documento?')) return;
-  DB.setDocs(DB.docs().filter(d => d.id !== btn.dataset.id));
-  renderDocs();
+document.addEventListener('click', async e => {
+  const b = e.target.closest('button[data-acao]'); if(!b) return;
+  if(b.dataset.acao==='apagar-reuniao'){ if(confirm('Apagar?')) { DB.setReunioes(DB.reunioes().filter(x=>x.id!==b.dataset.id)); renderReunioes(); } }
+  if(b.dataset.acao==='apagar-doc'){ if(confirm('Apagar?')) { DB.setDocs(DB.docs().filter(x=>x.id!==b.dataset.id)); renderDocs(); } }
+  if(b.dataset.acao==='enviar-reuniao'){
+    const r = DB.reunioes().find(x=>x.id===b.dataset.id);
+    const ok = await criarEvento({summary:'🤝 '+r.titulo, description:r.notas, start:{dateTime:new Date(r.data).toISOString()}, end:{dateTime:new Date(new Date(r.data).getTime()+3600000).toISOString()}, attendees:r.email?[{email:r.email}]:undefined});
+    alert(ok?'Enviado ✅':'Erro ❌');
+  }
 });
-
-/* =========================================================
-   GOOGLE CALENDAR (ID CORRIGIDO)
-   ========================================================= */
 const CLIENT_ID = '358294168881-eorh19o11sffnnksf2uduvigjl2ul4le.apps.googleusercontent.com';
 const SCOPES = 'https://www.googleapis.com/auth/calendar.events';
 let tokenClient = null;
-
 function initGoogle(){
-  if (typeof google === 'undefined' || !google.accounts) return false;
-  tokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: CLIENT_ID,
-    scope: SCOPES,
-    callback: resp => {
-      if (resp.access_token){
-        DB.setToken(resp.access_token);
-        atualizarEstadoLogin();
-        alert('Google Calendar ligado ✅');
-      }
-    }
-  });
+  if(typeof google==='undefined'||!google.accounts) return false;
+  tokenClient = google.accounts.oauth2.initTokenClient({client_id:CLIENT_ID, scope:SCOPES, callback: resp => { if(resp.access_token) { DB.setToken(resp.access_token); atualizarEstado(); alert('Ligado ✅'); } }});
   return true;
 }
-
-function atualizarEstadoLogin(){
-  const t = DB.token();
-  document.getElementById('estado-login').textContent = t ? 'Estado: ✅ ligado' : 'Estado: não ligado';
+function atualizarEstado(){ document.getElementById('estado-login').textContent = DB.token() ? 'Estado: ✅ ligado' : 'Estado: não ligado'; }
+document.getElementById('btn-login').onclick = () => { if(!initGoogle()) return alert('Aguarda 2s e tenta.'); tokenClient.requestAccessToken(); };
+document.getElementById('btn-logout').onclick = () => { DB.setToken(null); atualizarEstado(); };
+async function criarEvento(ev){
+  if(!DB.token()) return false;
+  try { const r = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {method:'POST', headers:{Authorization:'Bearer '+DB.token(), 'Content-Type':'application/json'}, body:JSON.stringify(ev)}); return r.ok; } catch(e){ return false; }
 }
-
-document.getElementById('btn-login').onclick = () => {
-  if (!initGoogle()) return alert('Biblioteca Google ainda a carregar, tenta novamente em 2s.');
-  tokenClient.requestAccessToken();
-};
-
-document.getElementById('btn-logout').onclick = () => {
-  DB.setToken(null);
-  atualizarEstadoLogin();
-};
-
-async function criarEventoGoogle(evento){
-  const token = DB.token();
-  if (!token) { alert('Liga primeiro o Google Calendar.'); return false; }
-  try {
-    const r = await fetch(
-      'https://www.googleapis.com/calendar/v3/calendars/primary/events',
-      {
-        method: 'POST',
-        headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
-        body: JSON.stringify(evento)
-      }
-    );
-    if (!r.ok) throw new Error(await r.text());
-    return true;
-  } catch(err){
-    console.error(err);
-    return false;
-  }
-}
-
 document.getElementById('btn-sincronizar').onclick = async () => {
-  const token = DB.token();
-  if (!token) return alert('Liga primeiro o Google Calendar.');
-
-  const log = document.getElementById('log-sinc');
-  log.innerHTML = '';
-  const tarefas = DB.tarefas().filter(t => t.status !== 'done');
-
-  if (!tarefas.length){
-    log.innerHTML = '<li>Nada para sincronizar.</li>';
-    return;
-  }
-
-  for (const t of tarefas){
-    log.innerHTML += `<li>⏳ A enviar "${t.titulo}"...</li>`;
-    const ok = await criarEventoGoogle({
-      summary: '📌 ' + t.titulo,
-      description: (t.descricao || '') + '\nResponsável: ' + t.responsavel,
-      start: { date: t.prazo },
-      end:   { date: t.prazo }
-    });
-    log.lastElementChild.textContent = ok
-      ? `✅ ${t.titulo} sincronizada`
-      : `❌ Erro em ${t.titulo}`;
-  }
+  if(!DB.token()) return alert('Liga primeiro.');
+  const log = document.getElementById('log-sinc'); log.innerHTML=''; const t = DB.tarefas().filter(x=>x.status!=='done');
+  if(!t.length) return log.innerHTML='<li>Nada para sincronizar.</li>';
+  for(const x of t){ log.innerHTML+=`<li>⏳ ${x.titulo}...</li>`; const ok = await criarEvento({summary:'📌 '+x.titulo, description:x.descricao+'\nResp: '+x.responsavel, start:{date:x.prazo}, end:{date:x.prazo}}); log.lastElementChild.textContent = ok?`✅ ${x.titulo}`:`❌ Erro em ${x.titulo}`; }
 };
-
-/* =========================================================
-   EXPORTAR / IMPORTAR
-   ========================================================= */
-function exportarJSON(){
-  const dados = {
-    exportadoEm: new Date().toISOString(),
-    tarefas: DB.tarefas(),
-    reunioes: DB.reunioes(),
-    docs: DB.docs()
-  };
-  const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `projeto-${hoje()}.json`;
-  a.click();
+function exportarJSON(){ const b = new Blob([JSON.stringify({tarefas:DB.tarefas(), reunioes:DB.reunioes(), docs:DB.docs()},null,2)], {type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=`projeto-${hoje()}.json`; a.click(); }
+function exportarMD(){
+  let m = `# Relatório\n\n## Tarefas\n${DB.tarefas().map(x=>`- [${x.status==='done'?'x':' '}] **${x.titulo}** (${x.responsavel}) — ${x.prazo}\n`).join('')}\n## Reuniões\n${DB.reunioes().map(x=>`- **${x.titulo}** — ${x.data}\n`).join('')}\n## Docs\n${DB.docs().map(x=>`- [${x.nome}](${x.url})\n`).join('')}`;
+  const b = new Blob([m], {type:'text/markdown'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=`relatorio-${hoje()}.md`; a.click();
 }
-
-function exportarRelatorio(){
-  const tarefas = DB.tarefas();
-  const reunioes = DB.reunioes();
-  const docs = DB.docs();
-  const h = hoje();
-
-  let md = `# Relatório do Projeto\n\nGerado em: ${new Date().toLocaleString('pt-PT')}\n\n`;
-  md += `## Resumo\n- Total de tarefas: ${tarefas.length}\n`;
-  md += `- Concluídas: ${tarefas.filter(t=>t.status==='done').length}\n`;
-  md += `- Em progresso: ${tarefas.filter(t=>t.status==='doing').length}\n`;
-  md += `- A fazer: ${tarefas.filter(t=>t.status==='todo').length}\n`;
-  md += `- Atrasadas: ${tarefas.filter(t=>t.status!=='done'&&t.prazo<h).length}\n\n`;
-
-  md += `## Tarefas\n`;
-  tarefas.forEach(t => {
-    md += `- [${t.status==='done'?'x':' '}] **${t.titulo}** — ${t.responsavel} — prazo: ${t.prazo}\n`;
-    if (t.descricao) md += `  - ${t.descricao}\n`;
-  });
-
-  md += `\n## Reuniões\n`;
-  reunioes.forEach(r => {
-    md += `- **${r.titulo}** — ${r.data}${r.email?' — convite: '+r.email:''}\n`;
-    if (r.notas) md += `  - ${r.notas}\n`;
-  });
-
-  md += `\n## Documentos\n`;
-  docs.forEach(d => md += `- [${d.nome}](${d.url})\n`);
-
-  const blob = new Blob([md], { type: 'text/markdown' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `relatorio-${hoje()}.md`;
-  a.click();
-}
-
-document.getElementById('btn-export').onclick = exportarJSON;
-document.getElementById('btn-export-md').onclick = exportarRelatorio;
-
+document.getElementById('btn-export').onclick = exportarJSON; document.getElementById('btn-export-md').onclick = exportarMD;
 document.getElementById('file-import').onchange = e => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    try {
-      const dados = JSON.parse(ev.target.result);
-      if (!confirm('Isto substitui os dados atuais. Continuar?')) return;
-      if (dados.tarefas) DB.setTarefas(dados.tarefas);
-      if (dados.reunioes) DB.setReunioes(dados.reunioes);
-      if (dados.docs) DB.setDocs(dados.docs);
-      document.getElementById('estado-import').textContent = '✅ Dados importados com sucesso!';
-      renderDashboard(); renderKanban(); renderReunioes(); renderDocs();
-    } catch(err){
-      document.getElementById('estado-import').textContent = '❌ Ficheiro inválido.';
-    }
-  };
-  reader.readAsText(file);
+  const f = e.target.files[0]; if(!f) return; const r = new FileReader();
+  r.onload = ev => { try { const d = JSON.parse(ev.target.result); if(!confirm('Substituir dados?')) return; if(d.tarefas) DB.setTarefas(d.tarefas); if(d.reunioes) DB.setReunioes(d.reunioes); if(d.docs) DB.setDocs(d.docs); document.getElementById('estado-import').textContent='✅ Importado!'; renderDash(); renderKanban(); renderReunioes(); renderDocs(); } catch { document.getElementById('estado-import').textContent='❌ Ficheiro inválido'; } };
+  r.readAsText(f);
 };
-
-document.getElementById('btn-limpar').onclick = () => {
-  if (!confirm('Apagar TODOS os dados? Esta ação é irreversível.')) return;
-  localStorage.clear();
-  renderDashboard(); renderKanban(); renderReunioes(); renderDocs(); atualizarEstadoLogin();
-  alert('Dados apagados.');
-};
-
-/* =========================================================
-   INICIALIZAÇÃO
-   ========================================================= */
-renderDashboard();
-renderKanban();
-renderReunioes();
-renderDocs();
-atualizarEstadoLogin();
-setTimeout(initGoogle, 1500);
+document.getElementById('btn-limpar').onclick = () => { if(confirm('Apagar tudo?')) { localStorage.clear(); renderDash(); renderKanban(); renderReunioes(); renderDocs(); atualizarEstado(); } };
+renderDash(); renderKanban(); renderReunioes(); renderDocs(); atualizarEstado(); setTimeout(initGoogle, 1500);
 </script>
 </body>
 </html>
