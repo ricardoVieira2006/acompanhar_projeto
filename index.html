@@ -84,7 +84,7 @@
     <h2 class="section-title">Marcar Reunião</h2>
     <form id="form-reuniao">
       <input type="text" id="r-titulo" placeholder="Assunto" required><input type="datetime-local" id="r-data" required>
-      <input type="email" id="r-email" placeholder="Email do colega"><textarea id="r-notas" placeholder="Notas" rows="2"></textarea>
+      <input type="email" id="r-email" placeholder="Email do colega (para convite e Google Meet)"><textarea id="r-notas" placeholder="Notas" rows="2"></textarea>
       <button type="submit">📅 Marcar</button>
     </form>
     <h2 class="section-title">Reuniões</h2><ul id="lista-reunioes" class="lista-prazos"></ul>
@@ -102,7 +102,7 @@
   <section id="pag-calendario" class="pagina">
     <h2 class="section-title">Google Calendar</h2>
     <div class="toolbar">
-      <button id="btn-login">🔗 Ligar</button><button id="btn-sincronizar">📤 Sincronizar</button><button id="btn-logout" class="secundario">Desligar</button>
+      <button id="btn-login">🔗 Ligar</button><button id="btn-sincronizar">📤 Sincronizar Tarefas</button><button id="btn-logout" class="secundario">Desligar</button>
     </div>
     <p id="estado-login" class="estado-login">Estado: não ligado</p><ul id="log-sinc" class="log-sinc"></ul>
   </section>
@@ -210,14 +210,13 @@ document.addEventListener('click', async e => {
       attendees:r.email?[{email:r.email}]:undefined,
       reminders: {
         useDefault: false,
-        overrides: [
-          {method: 'popup', minutes: 15} // Notifica 15 minutos antes da reunião
-        ]
+        overrides: [{method: 'popup', minutes: 15}]
       }
     });
-    alert(ok?'Reunião enviada para o Google Calendar ✅':'Erro ao enviar ❌');
+    alert(ok?'Reunião enviada para o Google Calendar ✅':'Erro ao enviar ❌ (Ver F12)');
   }
 });
+
 const CLIENT_ID = '358294168881-eorh19o11sffnnksf2uduvigjl2ul4le.apps.googleusercontent.com';
 const SCOPES = 'https://www.googleapis.com/auth/calendar.events';
 let tokenClient = null;
@@ -253,16 +252,20 @@ document.getElementById('btn-sincronizar').onclick = async () => {
   
   for(const x of t){ 
     log.innerHTML+=`<li>⏳ ${x.titulo}...</li>`; 
+    
+    // DATA FIM OBRIGATÓRIA: O Google exige que o dia de fim seja o dia seguinte ao prazo
+    const dFim = new Date(x.prazo + 'T00:00');
+    dFim.setDate(dFim.getDate() + 1);
+    const dataFimStr = dFim.toISOString().split('T')[0];
+
     const ok = await criarEvento({
       summary:'📌 '+x.titulo, 
       description:x.descricao+'\nResp: '+x.responsavel, 
       start:{date: x.prazo, timeZone: 'Europe/Lisbon'}, 
-      end:{date: x.prazo, timeZone: 'Europe/Lisbon'},
+      end:{date: dataFimStr, timeZone: 'Europe/Lisbon'},
       reminders: {
         useDefault: false,
-        overrides: [
-          {method: 'popup', minutes: 1440} // Notifica 1 dia antes (24h)
-        ]
+        overrides: [{method: 'popup', minutes: 1440}] // Alerta 1 dia antes
       }
     }); 
     log.lastElementChild.textContent = ok?`✅ ${x.titulo}`:`❌ Erro em ${x.titulo}`; 
